@@ -10,6 +10,7 @@
       :attributes="attributes"
       disable-page-swipe
       is-expanded
+      :show-summary="true"
     >
       <template v-slot:day-content="{ day, attributes }">
         <div class="flex flex-col h-full z-10 overflow-hidden">

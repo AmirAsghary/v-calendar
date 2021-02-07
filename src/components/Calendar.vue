@@ -48,6 +48,7 @@ export default {
           page,
           position: i + 1,
           titlePosition: this.titlePosition_,
+          showSummary: this.showSummary
         },
         on: {
           ...this.$listeners,
@@ -282,6 +283,10 @@ export default {
     attributes: [Object, Array],
     trimWeeks: Boolean,
     disablePageSwipe: Boolean,
+    showSummary: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {

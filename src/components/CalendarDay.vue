@@ -34,8 +34,7 @@ export default {
       );
 
     // Content layer
-    const contentLayer = () =>
-      this.safeScopedSlot('day-content', {
+    const contentLayer = () => this.safeScopedSlot('day-content', {
         day: this.day,
         attributes: this.day.attributes,
         attributesMap: this.day.attributesMap,

@@ -45,20 +45,54 @@ export default {
             [wl],
           ),
         ),
-        ...this.page.days.map(day =>
-          h(CalendarDay, {
-            attrs: {
-              ...this.$attrs,
-              day,
-            },
-            on: {
-              ...this.$listeners,
-            },
-            scopedSlots: this.$scopedSlots,
-            key: day.id,
-            ref: 'days',
-            refInFor: true,
-          }),
+        ...this.page.days.map(day => {
+            function calcWeek(date) {
+              if (date.inPrevMonth) return 1;
+              if (day.inNextMonth) return 5;
+              return day.week;
+            }
+
+          if (this.showSummary === true) {
+            const ___day = new Date(day.year, day.month - 1, day.day);
+            if (___day.getDay() === ((this.locale.firstDayOfWeek - 2 + 7) % 7)) {
+              return [
+                h(CalendarDay, {
+                  attrs: {
+                    ...this.$attrs,
+                    day,
+                  },
+                  on: {
+                    ...this.$listeners,
+                  },
+                  scopedSlots: this.$scopedSlots,
+                  key: day.id,
+                  ref: 'days',
+                  refInFor: true,
+                }),
+                h('div', {
+                  attrs: {
+                    style: 'border-bottom: 1px solid #b8c2cc; border-left: 1px solid #b8c2cc;',
+                    class: `summary week${calcWeek(day)}`
+                  }
+                })
+              ];
+            }
+          }
+
+            return h(CalendarDay, {
+              attrs: {
+                ...this.$attrs,
+                day,
+              },
+              on: {
+                ...this.$listeners,
+              },
+              scopedSlots: this.$scopedSlots,
+              key: day.id,
+              ref: 'days',
+              refInFor: true,
+            });
+        }
         ),
       ],
     );
@@ -77,6 +111,10 @@ export default {
     position: Number,
     titlePosition: String,
     navVisibility: String,
+    showSummary: {
+      type: Boolean,
+      default: false
+    }
   },
   computed: {
     navVisibility_() {
@@ -112,9 +150,11 @@ export default {
       });
     },
     weekdayLabels() {
-      return this.locale
+      const labels = this.locale
         .getWeekdayDates()
         .map(d => this.format(d, this.masks.weekdays));
+      if (this.showSummary === true) labels.push('Summary');
+      return labels;
     },
   },
   methods: {
@@ -122,6 +162,9 @@ export default {
       this.$refs.days.forEach(d => d.refresh());
     },
   },
+  mounted() {
+    if (this.showSummary === true) [...document.getElementsByClassName('vc-weeks')].forEach((el) => el.classList.add('vc-weeks-summarized'));
+  }
 };
 </script>
 
@@ -163,6 +206,9 @@ export default {
   overflow: auto;
   -webkit-overflow-scrolling: touch;
   padding: 5px;
+}
+.vc-weeks-summarized {
+  grid-template-columns: repeat(8, 1fr) !important;
 }
 
 .vc-weekday {
